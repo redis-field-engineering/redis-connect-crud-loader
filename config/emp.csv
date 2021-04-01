@@ -1,0 +1,21 @@
+empno,fname,lname,job,mgr,hiredate,sal,comm,dept
+1,Chlo,McGarvie,General Manager,19,2016-08-05 04:07:50,167105.34,123517.13,96
+2,Alex,Humm,Assistant Media Planner,70,2019-08-14 04:01:21,162370.71,165687.45,51
+3,Millard,Thaw,Help Desk Operator,88,2011-06-19 11:28:28,148309.08,141451.56,31
+4,Ettie,Lemmen,VP Sales,100,2018-12-01 10:06:37,119891.43,132007.29,91
+5,Ertha,Mountney,Staff Accountant III,96,2014-04-17 17:47:15,103030.34,157803.63,21
+6,Gigi,Ullyott,Human Resources Assistant IV,94,2020-05-16 22:22:24,165707.14,152263.29,34
+7,Missy,Melarkey,Professor,81,2017-05-19 17:07:13,126588.43,144330.49,87
+8,Ariela,Hearnden,Professor,18,2018-06-05 14:56:14,155120.69,184813.12,22
+9,Case,Segar,Assistant Professor,76,2010-09-03 22:23:21,149778.69,117032.42,95
+10,Mitzi,Pavelka,Accounting Assistant III,47,2017-11-15 23:11:35,168856.59,178510.27,83
+11,Eugenius,Potier,Junior Executive,64,2019-05-29 17:44:23,109915.41,148203.18,56
+12,Elaina,Peeter,Librarian,14,2010-06-19 18:33:28,142686.05,184758.55,12
+13,Magdalen,Mandrey,Environmental Tech,100,2014-07-31 06:37:54,155576.67,138971.22,18
+14,Meagan,Studders,Statistician IV,66,2013-01-09 23:37:31,163773.23,183454.08,14
+15,Hodge,Goodley,Biostatistician III,52,2011-09-06 03:14:09,179935.21,164426.79,78
+16,Sofie,Alessandone,Research Assistant I,40,2015-01-28 20:06:07,134579.44,108248.98,79
+17,Waldon,Arlidge,Budget/Accounting Analyst IV,90,2013-03-12 22:57:10,132174.22,116355.92,36
+18,Vicki,Sundin,Graphic Designer,52,2019-04-05 20:44:01,115436.09,153309.54,85
+19,Hamlen,Bedson,Design Engineer,84,2010-11-29 04:31:28,153745.80,101535.63,55
+20,Alysa,Frost,Computer Systems Analyst III,71,2013-01-28 05:42:20,174404.22,155601.09,19

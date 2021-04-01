@@ -1,0 +1,22 @@
+connections:
+  source:
+    name: RedisLabsCDC #database name
+    db: RedisLabsCDC #database
+    hostname: 35.185.69.89
+    port: 1433
+    username: sa
+    password: Redis@123
+    type: mssqlserver #this value can not be changed for mssqlserver
+    jdbcUrl: "jdbc:sqlserver://35.185.69.89:1433;database=RedisLabsCDC"
+    maximumPoolSize: 20
+    minimumIdle: 2
+    tableName: dbo.emp
+    batchSize: 100
+    loadQueryFile: insert.sql
+    csvFile: emp.csv
+    select: select.sql
+    updatedSelect: updatedSelect.sql
+    update: update.sql
+    delete: delete.sql
+    #loadQuery: "select * from dbo.emp"
+    iteration: 20

@@ -1,0 +1,1 @@
+UPDATE emp SET sal=102000.00 WHERE fname like 'a%';
