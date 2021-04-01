@@ -2,12 +2,12 @@ connections:
   source:
     name: RedisLabsCDC #database name
     db: RedisLabsCDC #database
-    hostname: 35.185.69.89
+    hostname: 127.0.0.1
     port: 1433
     username: sa
     password: Redis@123
     type: mssqlserver #this value can not be changed for mssqlserver
-    jdbcUrl: "jdbc:sqlserver://35.185.69.89:1433;database=RedisLabsCDC"
+    jdbcUrl: "jdbc:sqlserver://127.0.0.1:1433;database=RedisLabsCDC"
     maximumPoolSize: 20
     minimumIdle: 2
     tableName: dbo.emp
