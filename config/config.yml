@@ -11,7 +11,7 @@ connections:
     maximumPoolSize: 20
     minimumIdle: 2
     tableName: dbo.emp
-    batchSize: 100
+    batchSize: 10
     loadQueryFile: insert.sql
     csvFile: emp.csv
     select: select.sql
