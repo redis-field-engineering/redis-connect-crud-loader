@@ -28,13 +28,12 @@ import java.util.Map;
 @CommandLine.Command(name = "loadsql",
         description = "Load data into source table using sql insert statements.")
 public class LoadRDB implements Runnable {
-    private static final JDBCConnectionProvider JDBC_CONNECTION_PROVIDER = new JDBCConnectionProvider();
+    private Connection connection;
+
     private static final Map<String, Object> sourceConfig = LoaderConfig.INSTANCE.getEnvConfig().getConnection("source");
     private static final String tableName = (String) sourceConfig.get("tableName");
     private static final int batchSize = (int) sourceConfig.get("batchSize");
-    private CoreConfig coreConfig = new CoreConfig();
 
-    private Connection connection;
     private String lineQuery;
     private ArrayList<String> fileQuery;
     @CommandLine.Option(names = "--truncateBeforeLoad", description = "Truncate the source table before load", paramLabel = "<boolean>")
@@ -43,12 +42,16 @@ public class LoadRDB implements Runnable {
     @Override
     public void run() {
         try {
+            CoreConfig coreConfig = new CoreConfig();
+            JDBCConnectionProvider JDBC_CONNECTION_PROVIDER = new JDBCConnectionProvider();
             connection = JDBC_CONNECTION_PROVIDER.getConnection(coreConfig.getConnectionId());
             if(truncateBeforeLoad) {
                 //delete data from table before loading csv
                 connection.createStatement().execute("DELETE FROM " + tableName);
             }
-            load();
+            load(connection);
+
+            connection.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,7 +60,7 @@ public class LoadRDB implements Runnable {
 
     }
 
-    private void load() {
+    private void load(Connection connection) {
         try {
             int count = 0;
             ReadFile readFile = new ReadFile();
@@ -90,7 +93,6 @@ public class LoadRDB implements Runnable {
             log.info("{} row(s) affected!", count);
 
             loadStatement.close();
-            connection.close();
         } catch (SQLException sqe) {
             sqe.printStackTrace();
             log.error(String.valueOf(sqe));

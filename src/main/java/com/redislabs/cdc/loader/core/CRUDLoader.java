@@ -35,9 +35,6 @@ public class CRUDLoader implements Runnable {
     private static final String KEYS_REGEX = "\\$\\{keys}";
     private static final String VALUES_REGEX = "\\$\\{values}";
 
-    private Connection connection = null;
-    private static final JDBCConnectionProvider JDBC_CONNECTION_PROVIDER = new JDBCConnectionProvider();
-    private CoreConfig coreConfig = new CoreConfig();
     private static final Map<String, Object> sourceConfig = LoaderConfig.INSTANCE.getEnvConfig().getConnection("source");
     private static final String tableName = (String) sourceConfig.get("tableName");
     private static final String csvFile = (String) sourceConfig.get("csvFile");
@@ -48,6 +45,11 @@ public class CRUDLoader implements Runnable {
     private static final int batchSize = (int) sourceConfig.get("batchSize");
     private static final int iteration = (int) sourceConfig.get("iteration");
     private static final String type = (String) sourceConfig.get("type");
+    private Connection connection;
+    private ArrayList<String[]> insertDataList;
+    private ArrayList<String> updateDataList;
+    private ReadFile readFile;
+    private File filePath;
 
     @CommandLine.Option(names = {"-s", "--separator"}, description = "CSV records separator", paramLabel = "<char>", defaultValue = ",", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     private char separator = ',';
@@ -59,10 +61,10 @@ public class CRUDLoader implements Runnable {
      * given database table.
      * @throws Exception Throws exception
      */
-    private void doInsert() throws Exception {
+    private void doInsert(Connection connection) throws Exception {
         CSVReader csvReader;
         try {
-            File filePath = new File(System.getProperty(LoaderConfig.INSTANCE.getCONFIG_LOCATION_PROPERTY())
+            filePath = new File(System.getProperty(LoaderConfig.INSTANCE.getCONFIG_LOCATION_PROPERTY())
                     .concat(File.separator).concat(csvFile));
 
             csvReader = new CSVReader(new FileReader(filePath));
@@ -98,13 +100,11 @@ public class CRUDLoader implements Runnable {
         PreparedStatement ps;
 
         try {
-            //connection.setAutoCommit(false);
-
             ps = connection.prepareStatement(insert_query);
 
             int count = 0;
             String datePattern = "yyyy-MM-dd hh:mm:ss";
-            ArrayList<String[]> rowDataList = new ArrayList<>();
+            insertDataList = new ArrayList<>();
 
             while ((rowData = csvReader.readNext()) != null) {
 
@@ -123,7 +123,7 @@ public class CRUDLoader implements Runnable {
                     }
                 }
                 ps.addBatch();
-                rowDataList.add(rowData);
+                insertDataList.add(rowData);
 
                 if (++count % batchSize == 0) {
                     ps.executeBatch();
@@ -154,12 +154,12 @@ public class CRUDLoader implements Runnable {
         }
     }
 
-    private void doSelect() {
-        File filePath = new File(System.getProperty(LoaderConfig.INSTANCE.getCONFIG_LOCATION_PROPERTY())
+    private void doSelect(Connection connection) {
+        filePath = new File(System.getProperty(LoaderConfig.INSTANCE.getCONFIG_LOCATION_PROPERTY())
                 .concat(File.separator).concat(select));
         log.info("[OUTPUT FROM SELECT] {}", filePath.getAbsolutePath());
         try {
-            ReadFile readFile = new ReadFile();
+            readFile = new ReadFile();
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(readFile.readFileAsString(filePath.getAbsolutePath()));
             ResultSetMetaData rsmd = rs.getMetaData();
@@ -178,18 +178,18 @@ public class CRUDLoader implements Runnable {
         }
     }
 
-    private void doUpdate() {
+    private void doUpdate(Connection connection) {
         int count = 0;
-        File filePath = new File(System.getProperty(LoaderConfig.INSTANCE.getCONFIG_LOCATION_PROPERTY())
+        filePath = new File(System.getProperty(LoaderConfig.INSTANCE.getCONFIG_LOCATION_PROPERTY())
                 .concat(File.separator).concat(update));
         log.info("\n[Performing UPDATE] ... ");
         try {
-            ReadFile readFile = new ReadFile();
-            ArrayList<String> rows = readFile.readFileAsList(filePath.getAbsolutePath());
+            readFile = new ReadFile();
+            updateDataList = readFile.readFileAsList(filePath.getAbsolutePath());
             Statement st = connection.createStatement();
 
-            for (String row : rows) {
-                st.addBatch(row);
+            for (String sql : updateDataList) {
+                st.addBatch(sql);
                 if(++count % batchSize == 0) {
                     st.executeBatch();
                 }
@@ -206,12 +206,12 @@ public class CRUDLoader implements Runnable {
         }
     }
 
-    private void doUpdatedSelect() {
-        File filePath = new File(System.getProperty(LoaderConfig.INSTANCE.getCONFIG_LOCATION_PROPERTY())
+    private void doUpdatedSelect(Connection connection) {
+        filePath = new File(System.getProperty(LoaderConfig.INSTANCE.getCONFIG_LOCATION_PROPERTY())
                 .concat(File.separator).concat(updatedSelect));
         log.info("[OUTPUT FROM UPDATED SELECT] {}", filePath.getAbsolutePath());
         try {
-            ReadFile readFile = new ReadFile();
+            readFile = new ReadFile();
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(readFile.readFileAsString(filePath.getAbsolutePath()));
             ResultSetMetaData rsmd = rs.getMetaData();
@@ -222,18 +222,19 @@ public class CRUDLoader implements Runnable {
             }
             rs.close();
             st.close();
+
         }
         catch (Exception e) {
             log.error(e.getMessage());
         }
     }
 
-    private void doDelete() {
-        File filePath = new File(System.getProperty(LoaderConfig.INSTANCE.getCONFIG_LOCATION_PROPERTY())
+    private void doDelete(Connection connection) {
+        filePath = new File(System.getProperty(LoaderConfig.INSTANCE.getCONFIG_LOCATION_PROPERTY())
                 .concat(File.separator).concat(delete));
         log.info("\n[Performing DELETE] ... ");
         try {
-            ReadFile readFile = new ReadFile();
+            readFile = new ReadFile();
             Statement st = connection.createStatement();
             int count = st.executeUpdate(readFile.readFileAsString(filePath.getAbsolutePath()));
 
@@ -248,7 +249,7 @@ public class CRUDLoader implements Runnable {
         }
     }
 
-    private void doDeleteAll() {
+    private void doDeleteAll(Connection connection) {
         log.info("\n[Performing DELETE ALL ROWS] ... ");
         try {
             Statement st = connection.createStatement();
@@ -261,7 +262,7 @@ public class CRUDLoader implements Runnable {
         }
     }
 
-    private void doCount() {
+    private void doCount(Connection connection) {
         int select_count;
         try {
             Statement stmt = connection.createStatement();
@@ -270,6 +271,9 @@ public class CRUDLoader implements Runnable {
             rs.next();
             select_count = rs.getInt(1);
             log.info("Total records in {}={}.", tableName, select_count);
+
+            stmt.close();
+            rs.close();
         } catch(Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());
@@ -280,16 +284,18 @@ public class CRUDLoader implements Runnable {
     private void runAll()
     {
         try {
-            connection = JDBC_CONNECTION_PROVIDER.getConnection(coreConfig.getConnectionId());
             log.info("##### CRUDLoader started with {} iteration(s).", iteration);
+            CoreConfig coreConfig = new CoreConfig();
+            JDBCConnectionProvider JDBC_CONNECTION_PROVIDER = new JDBCConnectionProvider();
+            connection = JDBC_CONNECTION_PROVIDER.getConnection(coreConfig.getConnectionId());
             for (int i=1; i<=iteration; i++) {
-                doDeleteAll();
-                doSelect();
-                doCount();
+                doDeleteAll(connection);
+                doSelect(connection);
+                doCount(connection);
                 try {
                     if (csvFile != null) {
-                        doInsert();
-                        doCount();
+                        doInsert(connection);
+                        doCount(connection);
                     } else {
                         log.error("CSV data file is missing for the load.");
                         log.info("Skipping csv load and exiting..");
@@ -300,19 +306,19 @@ public class CRUDLoader implements Runnable {
                     e.printStackTrace();
                     log.error(e.getMessage());
                 }
-                doSelect(); doCount();
+                doSelect(connection); doCount(connection);
                 if (update != null) {
-                    doUpdate();  doCount();
+                    doUpdate(connection);  doCount(connection);
                 } else {
                     log.info("Skipping update..");
                 }
-                doUpdatedSelect(); doCount();
+                doUpdatedSelect(connection); doCount(connection);
                 if (delete != null) {
-                    doDelete();  doCount();
+                    doDelete(connection);  doCount(connection);
                 } else {
                     log.info("Skipping delete..");
                 }
-                doSelect(); doCount();
+                doSelect(connection); doCount(connection);
 
             }
             log.info("##### CRUDLoader ended with {} iteration(s).", iteration);

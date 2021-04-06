@@ -19,7 +19,9 @@ import java.util.Map;
 @Slf4j
 public class JDBCConnectionProvider implements ConnectionProvider<Connection> {
 
-    private static final Map<String,HikariDataSource> DATA_SOURCE_MAP = new HashMap<>();
+    private final Map<String,HikariDataSource> DATA_SOURCE_MAP = new HashMap<>();
+    private Connection connection = null;
+
 
     public Connection getConnection(String connectionId) {
         HikariDataSource dataSource = DATA_SOURCE_MAP.get(connectionId);
@@ -36,7 +38,6 @@ public class JDBCConnectionProvider implements ConnectionProvider<Connection> {
             dataSource = new HikariDataSource(jdbcConfig);
             DATA_SOURCE_MAP.put(connectionId,dataSource);
         }
-        Connection connection = null;
         try {
             connection = dataSource.getConnection();
         } catch (SQLException e) {

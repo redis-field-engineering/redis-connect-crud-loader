@@ -1,1 +1,1 @@
-SELECT TOP 30 empno, fname, lname, job, mgr, hiredate, sal, comm, dept FROM emp WHERE fname like 'a%';
+SELECT * FROM emp WHERE fname like 'a%';
