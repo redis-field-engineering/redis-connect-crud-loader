@@ -11,7 +11,7 @@ connections:
     maximumPoolSize: 10 #This property controls the maximum size that the pool is allowed to reach, including both idle and in-use connections.
     minimumIdle: 2 #This property controls the maximum amount of time that a connection is allowed to sit idle in the pool. This setting only applies when minimumIdle is defined to be less than maximumPoolSize.
     tableName: dbo.emp #table name in schema.table format
-    batchSize: 10 #batch size
+    batchSize: 100 #batch size
     loadQueryFile: insert.sql #insert query for loadsql option
     csvFile: emp.csv #csv data with header to load (crudloader option)
     select: select.sql #select query for the continuous crud (crudloader option)
@@ -19,4 +19,4 @@ connections:
     update: update.sql #update query for the continuous crud (crudloader option)
     delete: delete.sql #delete query for the continuous crud (crudloader option)
     #loadQuery: "select * from dbo.emp" #This can be used instead of loadQueryFile property
-    iteration: 10 #number of iterations to run (crudloader option)
+    iteration: 100 #number of iterations to run (crudloader option)

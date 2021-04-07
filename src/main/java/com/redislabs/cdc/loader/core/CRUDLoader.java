@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.sql.*;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
@@ -46,8 +48,6 @@ public class CRUDLoader implements Runnable {
     private static final int iteration = (int) sourceConfig.get("iteration");
     private static final String type = (String) sourceConfig.get("type");
     private Connection connection;
-    private ArrayList<String[]> insertDataList;
-    private ArrayList<String> updateDataList;
     private ReadFile readFile;
     private File filePath;
 
@@ -62,7 +62,9 @@ public class CRUDLoader implements Runnable {
      * @throws Exception Throws exception
      */
     private void doInsert(Connection connection) throws Exception {
+        Instant start = Instant.now();
         CSVReader csvReader;
+        PreparedStatement ps;
         try {
             filePath = new File(System.getProperty(LoaderConfig.INSTANCE.getCONFIG_LOCATION_PROPERTY())
                     .concat(File.separator).concat(csvFile));
@@ -96,24 +98,28 @@ public class CRUDLoader implements Runnable {
 
         log.info("Insert Query: {}", insert_query);
 
-        String[] rowData;
-        PreparedStatement ps;
-
         try {
             ps = connection.prepareStatement(insert_query);
-
+            /*
+            //List<List<String>> insertDataList = new ArrayList<>();
+            //ArrayList<String[]> insertDataList = new ArrayList<>();
+             */
             int count = 0;
-            String datePattern = "yyyy-MM-dd hh:mm:ss";
-            insertDataList = new ArrayList<>();
+            String[] rowData;
 
             while ((rowData = csvReader.readNext()) != null) {
 
                 int index = 1;
                 for (String columnData : rowData) {
-                    if (GenericValidator.isDate(columnData, datePattern, true)) {
+                    if (GenericValidator.isDate(columnData, DateTimeUtil.yyyy_MM_dd_HH_mm_ss.getDisplayName(), true)) {
                         String input = columnData.replace(" ", "T");
                         LocalDateTime ldt = LocalDateTime.parse(input);
                         ps.setTimestamp(index++, Timestamp.valueOf(ldt));
+                    } else if ( (GenericValidator.isDate(columnData, DateTimeUtil.yyyy_mm_dd.getDisplayName(),
+                            true)) || (GenericValidator.isDate(columnData,
+                            DateTimeUtil.yyyy_MM_dd.getDisplayName(), true)) ) {
+                        Date d = Date.valueOf(columnData);
+                        ps.setDate(index++, d);
                     } else if (GenericValidator.isDouble(columnData)) {
                         ps.setDouble(index++, Double.parseDouble(columnData));
                     } else if (GenericValidator.isInt(columnData)) {
@@ -123,7 +129,10 @@ public class CRUDLoader implements Runnable {
                     }
                 }
                 ps.addBatch();
-                insertDataList.add(rowData);
+                /*
+                //insertDataList.add(Arrays.asList(rowData));
+                //insertDataList.add(rowData);
+                 */
 
                 if (++count % batchSize == 0) {
                     ps.executeBatch();
@@ -145,11 +154,15 @@ public class CRUDLoader implements Runnable {
             connection.commit();
             ps.close();
             csvReader.close();
+
+            Instant finish = Instant.now();
+            long timeElapsed = Duration.between(start, finish).toMillis();
+            log.info("It took {} ms to load {} csv records.", timeElapsed, count);
         } catch (Exception e) {
             connection.rollback();
             e.printStackTrace();
             throw new Exception(
-                    "Error occurred while loading data from file to database."
+                    "Error occurred while loading data from csv file to the database."
                             + e.getMessage());
         }
     }
@@ -174,6 +187,7 @@ public class CRUDLoader implements Runnable {
             st.close();
         }
         catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
         }
     }
@@ -185,6 +199,7 @@ public class CRUDLoader implements Runnable {
         log.info("\n[Performing UPDATE] ... ");
         try {
             readFile = new ReadFile();
+            ArrayList<String> updateDataList;
             updateDataList = readFile.readFileAsList(filePath.getAbsolutePath());
             Statement st = connection.createStatement();
 
@@ -202,6 +217,7 @@ public class CRUDLoader implements Runnable {
             st.close();
         }
         catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
         }
     }
@@ -225,26 +241,37 @@ public class CRUDLoader implements Runnable {
 
         }
         catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
         }
     }
 
     private void doDelete(Connection connection) {
+        int count = 0;
         filePath = new File(System.getProperty(LoaderConfig.INSTANCE.getCONFIG_LOCATION_PROPERTY())
                 .concat(File.separator).concat(delete));
         log.info("\n[Performing DELETE] ... ");
         try {
             readFile = new ReadFile();
+            ArrayList<String> deletedDataList;
+            deletedDataList = readFile.readFileAsList(filePath.getAbsolutePath());
             Statement st = connection.createStatement();
-            int count = st.executeUpdate(readFile.readFileAsString(filePath.getAbsolutePath()));
 
-            log.info("Deleted {} row(s) from {} table.", count, tableName);
+            for (String sql : deletedDataList) {
+                st.addBatch(sql);
+                if(++count % batchSize == 0) {
+                    st.executeBatch();
+                }
+            }
+
+            log.info("Deleted {} row(s) in {} table.", count, tableName);
             st.executeBatch(); // update remaining records
             log.info("{} row(s) affected!", count);
 
             st.close();
         }
         catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
         }
     }
@@ -258,6 +285,7 @@ public class CRUDLoader implements Runnable {
             st.close();
         }
         catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
         }
     }
@@ -285,6 +313,7 @@ public class CRUDLoader implements Runnable {
     {
         try {
             log.info("##### CRUDLoader started with {} iteration(s).", iteration);
+            Instant start = Instant.now();
             CoreConfig coreConfig = new CoreConfig();
             JDBCConnectionProvider JDBC_CONNECTION_PROVIDER = new JDBCConnectionProvider();
             connection = JDBC_CONNECTION_PROVIDER.getConnection(coreConfig.getConnectionId());
@@ -322,8 +351,12 @@ public class CRUDLoader implements Runnable {
 
             }
             log.info("##### CRUDLoader ended with {} iteration(s).", iteration);
+            Instant finish = Instant.now();
+            long timeElapsed = Duration.between(start, finish).toMillis();
+            log.info("It took {} ms to run {} iterations.", timeElapsed, iteration);
             connection.close();
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
         }
 
