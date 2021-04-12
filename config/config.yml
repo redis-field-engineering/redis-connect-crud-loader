@@ -1,9 +1,5 @@
 connections:
   source:
-    name: RedisLabsCDC #database name
-    db: RedisLabsCDC #database
-    hostname: 127.0.0.1 #DB host
-    port: 1433 #DB port
     username: sa #DB user
     password: Redis@123 #DB password
     type: mssqlserver #this value can not be changed for mssqlserver
