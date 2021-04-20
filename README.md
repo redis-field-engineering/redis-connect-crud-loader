@@ -17,7 +17,24 @@ Contents of redis-cdc-crud-loader
 
 ## Configuration
 
-<details><summary>Configure config.yml</summary>
+redis-cdc-crud-loader includes drivers for the most common RDBMSs:
+
+<br>• Oracle
+<br>jdbc:oracle:thin:@myhost:1521:orcl
+
+<br>• IBM DB2
+<br>jdbc:db2://host:port/database
+
+<br>• MS SQL Server
+<br>jdbc:sqlserver://[serverName[\instanceName][:portNumber]][;property=value[;property=value]]
+
+<br>• MySQL
+<br>jdbc:mysql://[host]:[port][/database][?properties]
+
+<br>• PostgreSQL
+<br>jdbc:postgresql://host:port/database
+
+<details><summary>Sample config.yml</summary>
 <p>
 
 #### Sample config.yml under redis-cdc-crud-loader/config folder
