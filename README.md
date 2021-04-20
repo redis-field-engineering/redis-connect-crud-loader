@@ -45,6 +45,13 @@ connections:
 </p>
 </details>
 
+## Generate Data
+
+[Sample emp schema](https://www.mockaroo.com/f1faabd0)
+
+Generate data using cURL with the following command:
+<br>`curl "https://api.mockaroo.com/api/f1faabd0?count=1000&key=a4b4ee70" > "emp.csv"`
+
 ## Launch
 
 <br>[*nix OS](https://en.wikipedia.org/wiki/Unix-like):
