@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-<br>• RedisCDC connector (e.g. mssql) is setup and running with the same source database, schema and table(s).
+<br>• RedisCDC connector (e.g. mssql) is setup and running with the same source database, schema and table(s) as redis-cdc-crud-loader.
 <br>• Please have Java Runtime Environment ([OpenJRE](https://openjdk.java.net/install/) or OracleJRE) installed prior to running redis-cdc-crud-loader.
 
 ## Download
