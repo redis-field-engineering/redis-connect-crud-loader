@@ -2,11 +2,12 @@
 
 ## Prerequisites
 
-Please have Java Runtime Environment ([OpenJRE](https://openjdk.java.net/install/) or OracleJRE) installed prior to running redis-cdc-crud-loader.
+<br>• RedisCDC connector (e.g. mssql) is setup and running with the same source database, schema and table(s).
+<br>• Please have Java Runtime Environment ([OpenJRE](https://openjdk.java.net/install/) or OracleJRE) installed prior to running redis-cdc-crud-loader.
 
 ## Download
 
-Download the [latest release](https://github.com/RedisLabs-Field-Engineering/redis-cdc-crud-loader/releases/download/v1.0/redis-cdc-crud-loader-1.0-SNAPSHOT.tar.gz) and untar (tar -xvf redis-cdc-crud-loader-1.0-SNAPSHOT.tar.gz) the redis-cdc-crud-loader-1.0-SNAPSHOT.tar.gz archive.
+<br>Download the [latest release](https://github.com/RedisLabs-Field-Engineering/redis-cdc-crud-loader/releases/download/v1.0/redis-cdc-crud-loader-1.0-SNAPSHOT.tar.gz) and untar (tar -xvf redis-cdc-crud-loader-1.0-SNAPSHOT.tar.gz) the redis-cdc-crud-loader-1.0-SNAPSHOT.tar.gz archive.
 
 All the contents would be extracted under redis-cdc-integration-test directory
 
@@ -17,7 +18,7 @@ Contents of redis-cdc-crud-loader
 
 ## Configuration
 
-redis-cdc-crud-loader includes drivers for the most common RDBMSs:
+<br>redis-cdc-crud-loader includes drivers for the most common RDBMSs:
 
 <br>• Oracle
 <br>jdbc:oracle:thin:@myhost:1521:orcl
@@ -64,7 +65,7 @@ connections:
 
 ## Generate Data
 
-[emp table schema](https://www.mockaroo.com/f1faabd0)
+<br>Sample [emp table schema](https://www.mockaroo.com/f1faabd0) as provided in the package.
 
 Generate data using cURL with the following command:
 <br>`curl "https://api.mockaroo.com/api/f1faabd0?count=1000&key=a4b4ee70" > "emp.csv"`
