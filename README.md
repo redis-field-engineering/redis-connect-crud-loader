@@ -9,7 +9,7 @@
 
 <br>Download the [latest release](https://github.com/RedisLabs-Field-Engineering/redis-cdc-crud-loader/releases/download/v1.0/redis-cdc-crud-loader-1.0-SNAPSHOT.tar.gz) and untar (tar -xvf redis-cdc-crud-loader-1.0-SNAPSHOT.tar.gz) the redis-cdc-crud-loader-1.0-SNAPSHOT.tar.gz archive.
 
-All the contents would be extracted under redis-cdc-integration-test directory
+All the contents would be extracted under redis-cdc-crud-loader directory
 
 Contents of redis-cdc-crud-loader
 <br>•	bin – contains script files
