@@ -151,7 +151,7 @@ public class CRUDLoader implements Runnable {
             log.info("{} row(s) affected!", count);
 
             // commit and close connection
-            connection.commit();
+            //connection.commit();
             ps.close();
             csvReader.close();
 
