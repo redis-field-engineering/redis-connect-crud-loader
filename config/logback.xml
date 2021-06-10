@@ -1,5 +1,5 @@
 <configuration debug="true" scan="true" scanPeriod="30 seconds">
-    <property name="LOG_PATH" value="logs/redis-cdc-crud-loader.log"/>
+    <property name="LOG_PATH" value="logs/redis-connect-crud-loader.log"/>
     <appender name="FILE-ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">

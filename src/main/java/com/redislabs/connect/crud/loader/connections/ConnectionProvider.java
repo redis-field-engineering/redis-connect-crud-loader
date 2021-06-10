@@ -1,4 +1,4 @@
-package com.redislabs.cdc.loader.connections;
+package com.redislabs.connect.crud.loader.connections;
 
 import java.util.Properties;
 

@@ -1,9 +1,9 @@
-package com.redislabs.cdc.loader.source.rdb;
+package com.redislabs.connect.crud.loader.source.rdb;
 
-import com.redislabs.cdc.loader.config.LoaderConfig;
-import com.redislabs.cdc.loader.connections.JDBCConnectionProvider;
-import com.redislabs.cdc.loader.core.CoreConfig;
-import com.redislabs.cdc.loader.core.ReadFile;
+import com.redislabs.connect.crud.loader.config.LoaderConfig;
+import com.redislabs.connect.crud.loader.connections.JDBCConnectionProvider;
+import com.redislabs.connect.crud.loader.core.CoreConfig;
+import com.redislabs.connect.crud.loader.core.ReadFile;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

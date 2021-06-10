@@ -1,9 +1,9 @@
-package com.redislabs.cdc.loader.config;
+package com.redislabs.connect.crud.loader.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.redislabs.cdc.loader.config.model.EnvConfig;
+import com.redislabs.connect.crud.loader.config.model.EnvConfig;
 import lombok.Getter;
 
 import java.io.File;
@@ -17,7 +17,7 @@ import java.io.File;
 @Getter
 public enum LoaderConfig {
     INSTANCE;
-    String CONFIG_LOCATION_PROPERTY = "redislabs.cdc.loader.configLocation";
+    String CONFIG_LOCATION_PROPERTY = "redislabs.connect.crud.loader.configLocation";
     ObjectMapper yamlObjectMapper;
     ObjectMapper objectMapper;
 

@@ -1,24 +1,24 @@
-# redis-cdc-crud-loader
+# redis-connect-crud-loader
 
 ## Prerequisites
 
-<br>• RedisCDC connector (e.g. mssql) is setup and running with the same source database, schema and table(s) as redis-cdc-crud-loader.
-<br>• Please have Java Runtime Environment ([OpenJRE](https://openjdk.java.net/install/) or OracleJRE) installed prior to running redis-cdc-crud-loader.
+<br>• RedisConnect connector (e.g. SQL Server) is setup and running with the same source database, schema and table(s) as redis-connect-crud-loader.
+<br>• Please have Java Runtime Environment ([OpenJRE](https://openjdk.java.net/install/) or OracleJRE) installed prior to running redis-connect-crud-loader.
 
 ## Download
 
-<br>Download the [latest release](https://github.com/RedisLabs-Field-Engineering/redis-cdc-crud-loader/releases/download/v1.0/redis-cdc-crud-loader-1.0-SNAPSHOT.tar.gz) and untar (tar -xvf redis-cdc-crud-loader-1.0-SNAPSHOT.tar.gz) the redis-cdc-crud-loader-1.0-SNAPSHOT.tar.gz archive.
+<br>Download the [latest release](https://github.com/RedisLabs-Field-Engineering/redis-connect-crud-loader/releases/download/v1.0/redis-connect-crud-loader-1.0-SNAPSHOT.tar.gz) and untar (tar -xvf redis-connect-crud-loader-1.0-SNAPSHOT.tar.gz) the redis-connect-crud-loader-1.0-SNAPSHOT.tar.gz archive.
 
-All the contents would be extracted under redis-cdc-crud-loader directory
+All the contents would be extracted under redis-connect-crud-loader directory
 
-Contents of redis-cdc-crud-loader
+Contents of redis-connect-crud-loader
 <br>•	bin – contains script files
 <br>•	lib – contains java libraries
 <br>•	config – contains sample config and data files for crud loader
 
 ## Configuration
 
-<br>redis-cdc-crud-loader includes drivers for the most common RDBMSs:
+<br>redis-connect-crud-loader includes drivers for the most common RDBMSs:
 
 <br>• Oracle
 <br>jdbc:oracle:thin:@myhost:1521:orcl
@@ -38,7 +38,7 @@ Contents of redis-cdc-crud-loader
 <details><summary>Sample config.yml</summary>
 <p>
 
-#### Sample config.yml under redis-cdc-crud-loader/config folder
+#### Sample config.yml under redis-connect-crud-loader/config folder
 ```yml
 connections:
   source:
@@ -73,13 +73,13 @@ Generate data using cURL with the following command:
 ## Launch
 
 <br>[*nix OS](https://en.wikipedia.org/wiki/Unix-like):
-`redis-cdc-crud-loader/bin$ ./start.sh`
+`redis-connect-crud-loader/bin$ ./start.sh`
 <br>Windows OS:
-`redis-cdc-crud-loader\bin> start.bat`
+`redis-connect-crud-loader\bin> start.bat`
 
 ```bash
-Usage: redis-cdc-crud-loader [OPTIONS] [COMMAND]
-CRUD loader for redis-cdc with random Insert, Update and Delete events.
+Usage: redis-connect-crud-loader [OPTIONS] [COMMAND]
+CRUD loader for redis-connect with random Insert, Update and Delete events.
   -h, --help   Show this help message and exit.
 Commands:
   crudloader  Load CSV data to source database and execute random Insert, Update and Delete events.

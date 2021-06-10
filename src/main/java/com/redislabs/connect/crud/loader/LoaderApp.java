@@ -1,10 +1,10 @@
-package com.redislabs.cdc.loader;
+package com.redislabs.connect.crud.loader;
 
-import com.redislabs.cdc.loader.core.GenerateCompletionCommand;
-import com.redislabs.cdc.loader.core.HelpCommand;
-import com.redislabs.cdc.loader.core.LoaderCommandLine;
-import com.redislabs.cdc.loader.core.CRUDLoader;
-import com.redislabs.cdc.loader.source.rdb.LoadRDB;
+import com.redislabs.connect.crud.loader.core.GenerateCompletionCommand;
+import com.redislabs.connect.crud.loader.core.HelpCommand;
+import com.redislabs.connect.crud.loader.core.LoaderCommandLine;
+import com.redislabs.connect.crud.loader.core.CRUDLoader;
+import com.redislabs.connect.crud.loader.source.rdb.LoadRDB;
 import picocli.CommandLine;
 
 /**

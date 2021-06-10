@@ -1,8 +1,8 @@
-package com.redislabs.cdc.loader.core;
+package com.redislabs.connect.crud.loader.core;
 
 import com.opencsv.CSVReader;
-import com.redislabs.cdc.loader.config.LoaderConfig;
-import com.redislabs.cdc.loader.connections.JDBCConnectionProvider;
+import com.redislabs.connect.crud.loader.config.LoaderConfig;
+import com.redislabs.connect.crud.loader.connections.JDBCConnectionProvider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -159,7 +159,9 @@ public class CRUDLoader implements Runnable {
             long timeElapsed = Duration.between(start, finish).toMillis();
             log.info("It took {} ms to load {} csv records.", timeElapsed, count);
         } catch (Exception e) {
-            connection.rollback();
+            //Can't call rollback when autocommit=true by default by HikariCP
+            // https://github.com/brettwooldridge/HikariCP/issues/1195#issuecomment-404131395
+            //connection.rollback();
             e.printStackTrace();
             throw new Exception(
                     "Error occurred while loading data from csv file to the database."

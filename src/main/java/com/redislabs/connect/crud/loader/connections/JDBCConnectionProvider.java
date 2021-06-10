@@ -1,6 +1,6 @@
-package com.redislabs.cdc.loader.connections;
+package com.redislabs.connect.crud.loader.connections;
 
-import com.redislabs.cdc.loader.config.LoaderConfig;
+import com.redislabs.connect.crud.loader.config.LoaderConfig;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
