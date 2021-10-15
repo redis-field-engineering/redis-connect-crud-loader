@@ -52,10 +52,10 @@ connections:
     batchSize: 100 #batch size
     loadQueryFile: insert.sql #insert query for loadsql option
     csvFile: emp.csv #csv data with header to load (crudloader option)
-    select: select.sql #select query for the continuous crud (crudloader option)
-    updatedSelect: updatedSelect.sql #updated select query for the continuous crud
-    update: update.sql #update query for the continuous crud (crudloader option)
-    delete: delete.sql #delete query for the continuous crud (crudloader option)
+    select: select.sql #select query for the continuous crud (crudloader option). To skip select, comment it out i.e. "select: #select.sql"
+    updatedSelect: updatedSelect.sql #updated select query for the continuous crud.  To skip updatedSelect, comment it out i.e. "select: #updatedSelect.sql"
+    update: update.sql #update query for the continuous crud (crudloader option). To skip update, comment it out i.e. "select: #update.sql"
+    delete: delete.sql #delete query for the continuous crud (crudloader option). To skip delete, comment it out i.e. "select: #delete.sql"
     #loadQuery: "select * from dbo.emp" #This can be used instead of loadQueryFile property
     iteration: 100 #number of iterations to run (crudloader option)
 ```
