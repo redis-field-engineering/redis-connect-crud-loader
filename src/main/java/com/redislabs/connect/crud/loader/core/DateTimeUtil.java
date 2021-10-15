@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 
 @Getter
 public enum DateTimeUtil {
+    dd_MM_yyyy(new SimpleDateFormat("dd-MM-yyyy"), "dd-MM-yyyy"),
     yyyy_mm_dd(new SimpleDateFormat("yyyy-mm-dd"), "yyyy-mm-dd"),
     yyyy_MM_dd(new SimpleDateFormat("yyyy-MM-dd"), "yyyy-MM-dd"),
     yyyyMMdd(new SimpleDateFormat("yyyyMMdd"), "yyyyMMdd"),

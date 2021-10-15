@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="crudloader" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.redislabs.connect.crud.loader.LoaderMain" />
+    <module name="redis-connect-crud-loader" />
+    <option name="PROGRAM_PARAMETERS" value="crudloader" />
+    <option name="VM_PARAMETERS" value="-Dlogback.configurationFile=$PROJECT_DIR$/config/logback.xml -Dredislabs.connect.crud.loader.configLocation=$PROJECT_DIR$/config" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

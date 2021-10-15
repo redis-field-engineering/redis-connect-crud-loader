@@ -6,24 +6,27 @@ import com.redislabs.connect.crud.loader.connections.JDBCConnectionProvider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.validator.GenericValidator;
 import picocli.CommandLine;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.lang.management.ManagementFactory;
 import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 
 /**
- *
  * @author Virag Tripathi
- *
  */
 @Getter
 @Setter
@@ -32,6 +35,7 @@ import java.util.Map;
         description = "Load CSV data to source database and execute random Insert, Update and Delete events.")
 public class CRUDLoader implements Runnable {
 
+    private static final String WHOAMI = "CRUDLoader";
     private String SQL_INSERT = "INSERT INTO ${table}(${keys}) VALUES(${values})";
     private static final String TABLE_REGEX = "\\$\\{table}";
     private static final String KEYS_REGEX = "\\$\\{keys}";
@@ -59,6 +63,7 @@ public class CRUDLoader implements Runnable {
     /**
      * Parse CSV file using OpenCSV library and load in
      * given database table.
+     *
      * @throws Exception Throws exception
      */
     private void doInsert(Connection connection) throws Exception {
@@ -75,18 +80,18 @@ public class CRUDLoader implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Error occurred while executing file. "
-                    + e.getMessage());
+                    + ExceptionUtils.getRootCauseMessage(e));
         }
 
         String[] headerRow = csvReader.readNext();
 
         if (null == headerRow) {
             throw new FileNotFoundException(
-                    "No columns defined in given CSV file." +
+                    "No columns defined in given CSV file. " +
                             "Please check the CSV file format.");
         }
 
-        String questionmarks = StringUtils.repeat("?"+getSeparator(), headerRow.length);
+        String questionmarks = StringUtils.repeat("?" + getSeparator(), headerRow.length);
         questionmarks = (String) questionmarks.subSequence(0, questionmarks
                 .length() - 1);
 
@@ -100,10 +105,7 @@ public class CRUDLoader implements Runnable {
 
         try {
             ps = connection.prepareStatement(insert_query);
-            /*
-            //List<List<String>> insertDataList = new ArrayList<>();
-            //ArrayList<String[]> insertDataList = new ArrayList<>();
-             */
+
             int count = 0;
             String[] rowData;
 
@@ -115,11 +117,16 @@ public class CRUDLoader implements Runnable {
                         String input = columnData.replace(" ", "T");
                         LocalDateTime ldt = LocalDateTime.parse(input);
                         ps.setTimestamp(index++, Timestamp.valueOf(ldt));
-                    } else if ( (GenericValidator.isDate(columnData, DateTimeUtil.yyyy_mm_dd.getDisplayName(),
+                    } else if ((GenericValidator.isDate(columnData, DateTimeUtil.yyyy_mm_dd.getDisplayName(),
                             true)) || (GenericValidator.isDate(columnData,
-                            DateTimeUtil.yyyy_MM_dd.getDisplayName(), true)) ) {
+                            DateTimeUtil.yyyy_MM_dd.getDisplayName(), true))) {
                         Date d = Date.valueOf(columnData);
                         ps.setDate(index++, d);
+                    } else if ((GenericValidator.isDate(columnData, DateTimeUtil.dd_MM_yyyy.getDisplayName(),
+                            true))) {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateTimeUtil.dd_MM_yyyy.getDisplayName(), Locale.ENGLISH);
+                        LocalDate d = LocalDate.parse(columnData, formatter);
+                        ps.setDate(index++, Date.valueOf(d));
                     } else if (GenericValidator.isDouble(columnData)) {
                         ps.setDouble(index++, Double.parseDouble(columnData));
                     } else if (GenericValidator.isInt(columnData)) {
@@ -129,10 +136,6 @@ public class CRUDLoader implements Runnable {
                     }
                 }
                 ps.addBatch();
-                /*
-                //insertDataList.add(Arrays.asList(rowData));
-                //insertDataList.add(rowData);
-                 */
 
                 if (++count % batchSize == 0) {
                     ps.executeBatch();
@@ -150,8 +153,6 @@ public class CRUDLoader implements Runnable {
             ps.executeBatch(); // insert remaining records
             log.info("{} row(s) affected!", count);
 
-            // commit and close connection
-            //connection.commit();
             ps.close();
             csvReader.close();
 
@@ -159,13 +160,10 @@ public class CRUDLoader implements Runnable {
             long timeElapsed = Duration.between(start, finish).toMillis();
             log.info("It took {} ms to load {} csv records.", timeElapsed, count);
         } catch (Exception e) {
-            //Can't call rollback when autocommit=true by default by HikariCP
-            // https://github.com/brettwooldridge/HikariCP/issues/1195#issuecomment-404131395
-            //connection.rollback();
             e.printStackTrace();
             throw new Exception(
-                    "Error occurred while loading data from csv file to the database."
-                            + e.getMessage());
+                    "Error occurred while loading data from csv file to the database. "
+                            + ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
@@ -178,19 +176,19 @@ public class CRUDLoader implements Runnable {
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(readFile.readFileAsString(filePath.getAbsolutePath()));
             ResultSetMetaData rsmd = rs.getMetaData();
-            while (rs.next())
-            {
-                for (int i=1; i<=rsmd.getColumnCount(); i++)
-                    //if (log.isDebugEnabled()) {
-                        log.info("{{} : {}}", rsmd.getColumnName(i), rs.getString(i));
-                    //}
+            while (rs.next()) {
+                for (int i = 1; i <= rsmd.getColumnCount(); i++)
+                    if (log.isDebugEnabled()) {
+                        log.debug("{{} : {}}", rsmd.getColumnName(i), rs.getString(i));
+                    }
             }
             rs.close();
             st.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            log.error(e.getMessage());
+            log.error("Instance: {} {} failed during select " + "MESSAGE: {} STACKTRACE: {}",
+                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
     }
 
@@ -207,7 +205,7 @@ public class CRUDLoader implements Runnable {
 
             for (String sql : updateDataList) {
                 st.addBatch(sql);
-                if(++count % batchSize == 0) {
+                if (++count % batchSize == 0) {
                     st.executeBatch();
                 }
             }
@@ -217,10 +215,11 @@ public class CRUDLoader implements Runnable {
             log.info("{} row(s) affected!", count);
 
             st.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            log.error(e.getMessage());
+            log.error("Instance: {} {} failed during update " + "MESSAGE: {} STACKTRACE: {}",
+                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
     }
 
@@ -233,18 +232,18 @@ public class CRUDLoader implements Runnable {
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(readFile.readFileAsString(filePath.getAbsolutePath()));
             ResultSetMetaData rsmd = rs.getMetaData();
-            while (rs.next())
-            {
-                for (int i=1; i<=rsmd.getColumnCount(); i++)
+            while (rs.next()) {
+                for (int i = 1; i <= rsmd.getColumnCount(); i++)
                     log.info("{{} : {}}", rsmd.getColumnName(i), rs.getString(i));
             }
             rs.close();
             st.close();
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            log.error(e.getMessage());
+            log.error("Instance: {} {} failed during updatedSelect " + "MESSAGE: {} STACKTRACE: {}",
+                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
     }
 
@@ -261,7 +260,7 @@ public class CRUDLoader implements Runnable {
 
             for (String sql : deletedDataList) {
                 st.addBatch(sql);
-                if(++count % batchSize == 0) {
+                if (++count % batchSize == 0) {
                     st.executeBatch();
                 }
             }
@@ -271,10 +270,11 @@ public class CRUDLoader implements Runnable {
             log.info("{} row(s) affected!", count);
 
             st.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            log.error(e.getMessage());
+            log.error("Instance: {} {} failed during delete " + "MESSAGE: {} STACKTRACE: {}",
+                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
     }
 
@@ -285,10 +285,11 @@ public class CRUDLoader implements Runnable {
             st.executeUpdate("DELETE FROM " + tableName);
 
             st.close();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            log.error(e.getMessage());
+            log.error("Instance: {} {} failed during deleteAll " + "MESSAGE: {} STACKTRACE: {}",
+                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
     }
 
@@ -304,62 +305,78 @@ public class CRUDLoader implements Runnable {
 
             stmt.close();
             rs.close();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            log.error(e.getMessage());
+            log.error("Instance: {} {} failed during count " + "MESSAGE: {} STACKTRACE: {}",
+                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
 
     }
 
-    private void runAll()
-    {
+    private void runAll() {
         try {
-            log.info("##### CRUDLoader started with {} iteration(s).", iteration);
+            log.info("Instance: {} {} started with {} iteration(s).", ManagementFactory.getRuntimeMXBean().getName(), WHOAMI, iteration);
             Instant start = Instant.now();
             CoreConfig coreConfig = new CoreConfig();
             JDBCConnectionProvider JDBC_CONNECTION_PROVIDER = new JDBCConnectionProvider();
             connection = JDBC_CONNECTION_PROVIDER.getConnection(coreConfig.getConnectionId());
-            for (int i=1; i<=iteration; i++) {
+            for (int i = 1; i <= iteration; i++) {
                 doDeleteAll(connection);
-                doSelect(connection);
-                doCount(connection);
-                try {
-                    if (csvFile != null) {
-                        doInsert(connection);
-                        doCount(connection);
-                    } else {
-                        log.error("CSV data file is missing for the load.");
-                        log.info("Skipping csv load and exiting..");
-                        System.exit(0);
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    log.error(e.getMessage());
+                if (select != null) {
+                    doSelect(connection);
+                } else {
+                    log.info("Skipping select..");
                 }
-                doSelect(connection); doCount(connection);
+
+                doCount(connection);
+
+                if (csvFile != null) {
+                    doInsert(connection);
+                    doCount(connection);
+                } else {
+                    log.error("CSV data file is missing for the load.");
+                    log.info("Skipping csv load and exiting..");
+                    System.exit(0);
+                }
+
                 if (update != null) {
-                    doUpdate(connection);  doCount(connection);
+                    doUpdate(connection);
+                    doCount(connection);
                 } else {
                     log.info("Skipping update..");
                 }
-                doUpdatedSelect(connection); doCount(connection);
+                if (updatedSelect != null) {
+                    doUpdatedSelect(connection);
+                } else {
+                    log.info("Skipping updatedSelect..");
+                }
                 if (delete != null) {
-                    doDelete(connection);  doCount(connection);
+                    doDelete(connection);
+                    doCount(connection);
                 } else {
                     log.info("Skipping delete..");
                 }
-                doSelect(connection); doCount(connection);
+                if (select != null) {
+                    doSelect(connection);
+                } else {
+                    log.info("Skipping select..");
+                }
+                doCount(connection);
 
             }
-            log.info("##### CRUDLoader ended with {} iteration(s).", iteration);
+
+            log.info("Instance: {} {} ended with {} iteration(s).", ManagementFactory.getRuntimeMXBean().getName(), WHOAMI, iteration);
+
             Instant finish = Instant.now();
             long timeElapsed = Duration.between(start, finish).toMillis();
             log.info("It took {} ms to run {} iterations.", timeElapsed, iteration);
             connection.close();
         } catch (Exception e) {
             e.printStackTrace();
-            log.error(e.getMessage());
+            log.error("Instance: {} {} failed during runAll " + "MESSAGE: {} STACKTRACE: {}",
+                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
 
     }

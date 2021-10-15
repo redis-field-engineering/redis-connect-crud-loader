@@ -7,11 +7,12 @@ import com.redislabs.connect.crud.loader.core.ReadFile;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import picocli.CommandLine;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Map;
@@ -30,6 +31,7 @@ import java.util.Map;
 public class LoadRDB implements Runnable {
     private Connection connection;
 
+    private static final String WHOAMI = "LoadRDB";
     private static final Map<String, Object> sourceConfig = LoaderConfig.INSTANCE.getEnvConfig().getConnection("source");
     private static final String tableName = (String) sourceConfig.get("tableName");
     private static final int batchSize = (int) sourceConfig.get("batchSize");
@@ -55,12 +57,14 @@ public class LoadRDB implements Runnable {
 
         } catch (Exception e) {
             e.printStackTrace();
-            log.error(e.getMessage());
+            log.error("Instance: {} {} failed during run " + "MESSAGE: {} STACKTRACE: {}",
+                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
 
     }
 
-    private void load(Connection connection) {
+    private void load(Connection connection) throws Exception {
         try {
             int count = 0;
             ReadFile readFile = new ReadFile();
@@ -83,7 +87,7 @@ public class LoadRDB implements Runnable {
                     }
                     log.info("Loading {} row(s) into {} table with batchsize {}.", count, tableName, batchSize);
                 } else {
-                    log.error("SQL file is missing for the load.");
+                    log.error("SQL file with insert statements is missing for the load.");
                     log.info("Skipping sql load and exiting..");
 
                 }
@@ -93,12 +97,11 @@ public class LoadRDB implements Runnable {
             log.info("{} row(s) affected!", count);
 
             loadStatement.close();
-        } catch (SQLException sqe) {
-            sqe.printStackTrace();
-            log.error(String.valueOf(sqe));
         } catch (Exception e) {
             e.printStackTrace();
-            log.error(e.getMessage());
+            throw new Exception(
+                    "Error occurred while loading data from insert statements. "
+                            + ExceptionUtils.getRootCauseMessage(e));
         }
 
     }
