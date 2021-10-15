@@ -1,1 +1,1 @@
-SELECT * FROM emp WHERE fname like 'a%';
+SELECT * FROM emp WHERE fname like 'a%'

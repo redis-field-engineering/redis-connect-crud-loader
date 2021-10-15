@@ -32,8 +32,8 @@ public class JDBCConnectionProvider implements ConnectionProvider<Connection> {
             jdbcConfig.setJdbcUrl((String) databaseConfig.get("jdbcUrl"));
             jdbcConfig.setUsername((String) databaseConfig.get("username"));
             jdbcConfig.setPassword((String) databaseConfig.get("password"));
-            jdbcConfig.setMaximumPoolSize((Integer)databaseConfig.get("maximumPoolSize"));
-            jdbcConfig.setMinimumIdle((Integer)databaseConfig.get("minimumIdle"));
+            jdbcConfig.setMaximumPoolSize((Integer)databaseConfig.getOrDefault("maximumPoolSize", 10));
+            jdbcConfig.setMinimumIdle((Integer)databaseConfig.getOrDefault("minimumIdle", 2));
 
             dataSource = new HikariDataSource(jdbcConfig);
             DATA_SOURCE_MAP.put(connectionId,dataSource);

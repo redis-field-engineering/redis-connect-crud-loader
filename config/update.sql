@@ -1,1 +1,1 @@
-UPDATE emp SET sal=160000.00 WHERE fname like 'a%';
+UPDATE emp SET sal=160000.00 WHERE fname like 'a%'

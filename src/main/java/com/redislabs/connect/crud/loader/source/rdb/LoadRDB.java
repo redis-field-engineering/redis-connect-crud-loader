@@ -14,6 +14,8 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -34,15 +36,18 @@ public class LoadRDB implements Runnable {
     private static final String WHOAMI = "LoadRDB";
     private static final Map<String, Object> sourceConfig = LoaderConfig.INSTANCE.getEnvConfig().getConnection("source");
     private static final String tableName = (String) sourceConfig.get("tableName");
-    private static final int batchSize = (int) sourceConfig.get("batchSize");
+    private int batchSize = (int) sourceConfig.getOrDefault("batchSize", 100);
+    private boolean truncateBeforeLoad = (boolean) sourceConfig.getOrDefault("truncateBeforeLoad", true);
 
     private String lineQuery;
     private ArrayList<String> fileQuery;
-    @CommandLine.Option(names = "--truncateBeforeLoad", description = "Truncate the source table before load", paramLabel = "<boolean>")
-    private boolean truncateBeforeLoad = true;
 
     @Override
     public void run() {
+        log.info("Instance: {} {} started.", ManagementFactory.getRuntimeMXBean().getName(), WHOAMI);
+
+        Instant start = Instant.now();
+
         try {
             CoreConfig coreConfig = new CoreConfig();
             JDBCConnectionProvider JDBC_CONNECTION_PROVIDER = new JDBCConnectionProvider();
@@ -50,8 +55,16 @@ public class LoadRDB implements Runnable {
             if(truncateBeforeLoad) {
                 //delete data from table before loading csv
                 connection.createStatement().execute("DELETE FROM " + tableName);
+            } else {
+                log.info("Skipping truncate..");
             }
             load(connection);
+
+            log.info("Instance: {} {} ended.", ManagementFactory.getRuntimeMXBean().getName(), WHOAMI);
+
+            Instant finish = Instant.now();
+            long timeElapsed = Duration.between(start, finish).toMillis();
+            log.info("It took {} ms to finish the data load process.", timeElapsed);
 
             connection.close();
 

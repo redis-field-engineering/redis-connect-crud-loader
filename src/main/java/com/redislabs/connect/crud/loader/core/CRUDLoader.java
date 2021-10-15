@@ -48,17 +48,15 @@ public class CRUDLoader implements Runnable {
     private static final String updatedSelect = (String) sourceConfig.get("updatedSelect");
     private static final String update = (String) sourceConfig.get("update");
     private static final String delete = (String) sourceConfig.get("delete");
-    private static final int batchSize = (int) sourceConfig.get("batchSize");
-    private static final int iteration = (int) sourceConfig.get("iteration");
+    private int batchSize = (int) sourceConfig.getOrDefault("batchSize", 100);
+    private int iteration = (int) sourceConfig.getOrDefault("iteration", 1);
     private static final String type = (String) sourceConfig.get("type");
+    private char separator = (char) sourceConfig.getOrDefault("separator", ',');
+    private boolean truncateBeforeLoad = (boolean) sourceConfig.getOrDefault("truncateBeforeLoad", true);
+
     private Connection connection;
     private ReadFile readFile;
     private File filePath;
-
-    @CommandLine.Option(names = {"-s", "--separator"}, description = "CSV records separator", paramLabel = "<char>", defaultValue = ",", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-    private char separator = ',';
-    @CommandLine.Option(names = {"-t", "--truncateBeforeLoad"}, description = "Truncate the source table before load", paramLabel = "<boolean>")
-    private boolean truncateBeforeLoad = true;
 
     /**
      * Parse CSV file using OpenCSV library and load in
@@ -98,7 +96,7 @@ public class CRUDLoader implements Runnable {
         String insert_query = SQL_INSERT.replaceFirst(TABLE_REGEX, CRUDLoader.tableName);
         insert_query = insert_query
                 .replaceFirst(KEYS_REGEX, StringUtils.join(headerRow,
-                        getSeparator()));
+                        this.separator));
         insert_query = insert_query.replaceFirst(VALUES_REGEX, questionmarks);
 
         log.info("Insert Query: {}", insert_query);
@@ -322,7 +320,11 @@ public class CRUDLoader implements Runnable {
             JDBCConnectionProvider JDBC_CONNECTION_PROVIDER = new JDBCConnectionProvider();
             connection = JDBC_CONNECTION_PROVIDER.getConnection(coreConfig.getConnectionId());
             for (int i = 1; i <= iteration; i++) {
-                doDeleteAll(connection);
+                if (truncateBeforeLoad) {
+                    doDeleteAll(connection);
+                } else {
+                    log.info("Skipping truncate..");
+                }
                 if (select != null) {
                     doSelect(connection);
                 } else {
@@ -370,7 +372,7 @@ public class CRUDLoader implements Runnable {
 
             Instant finish = Instant.now();
             long timeElapsed = Duration.between(start, finish).toMillis();
-            log.info("It took {} ms to run {} iterations.", timeElapsed, iteration);
+            log.info("It took {} ms to finish {} iterations.", timeElapsed, iteration);
             connection.close();
         } catch (Exception e) {
             e.printStackTrace();
