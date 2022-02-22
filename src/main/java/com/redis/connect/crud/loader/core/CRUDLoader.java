@@ -1,8 +1,8 @@
-package com.redislabs.connect.crud.loader.core;
+package com.redis.connect.crud.loader.core;
 
 import com.opencsv.CSVReader;
-import com.redislabs.connect.crud.loader.config.LoaderConfig;
-import com.redislabs.connect.crud.loader.connections.JDBCConnectionProvider;
+import com.redis.connect.crud.loader.config.LoaderConfig;
+import com.redis.connect.crud.loader.connections.JDBCConnectionProvider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +36,8 @@ import java.util.Map;
 public class CRUDLoader implements Runnable {
 
     private static final String WHOAMI = "CRUDLoader";
+    private final String instanceId;
+
     private String SQL_INSERT = "INSERT INTO ${table}(${keys}) VALUES(${values})";
     private static final String TABLE_REGEX = "\\$\\{table}";
     private static final String KEYS_REGEX = "\\$\\{keys}";
@@ -57,6 +59,10 @@ public class CRUDLoader implements Runnable {
     private Connection connection;
     private ReadFile readFile;
     private File filePath;
+
+    public CRUDLoader() {
+        this.instanceId = ManagementFactory.getRuntimeMXBean().getName();
+    }
 
     /**
      * Parse CSV file using OpenCSV library and load in
@@ -185,7 +191,7 @@ public class CRUDLoader implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Instance: {} {} failed during select " + "MESSAGE: {} STACKTRACE: {}",
-                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    instanceId, WHOAMI,
                     ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
     }
@@ -216,7 +222,7 @@ public class CRUDLoader implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Instance: {} {} failed during update " + "MESSAGE: {} STACKTRACE: {}",
-                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    instanceId, WHOAMI,
                     ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
     }
@@ -240,7 +246,7 @@ public class CRUDLoader implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Instance: {} {} failed during updatedSelect " + "MESSAGE: {} STACKTRACE: {}",
-                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    instanceId, WHOAMI,
                     ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
     }
@@ -271,7 +277,7 @@ public class CRUDLoader implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Instance: {} {} failed during delete " + "MESSAGE: {} STACKTRACE: {}",
-                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    instanceId, WHOAMI,
                     ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
     }
@@ -286,7 +292,7 @@ public class CRUDLoader implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Instance: {} {} failed during deleteAll " + "MESSAGE: {} STACKTRACE: {}",
-                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    instanceId, WHOAMI,
                     ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
     }
@@ -306,7 +312,7 @@ public class CRUDLoader implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Instance: {} {} failed during count " + "MESSAGE: {} STACKTRACE: {}",
-                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    instanceId, WHOAMI,
                     ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
 
@@ -368,7 +374,7 @@ public class CRUDLoader implements Runnable {
 
             }
 
-            log.info("Instance: {} {} ended with {} iteration(s).", ManagementFactory.getRuntimeMXBean().getName(), WHOAMI, iteration);
+            log.info("Instance: {} {} ended with {} iteration(s).", instanceId, WHOAMI, iteration);
 
             Instant finish = Instant.now();
             long timeElapsed = Duration.between(start, finish).toMillis();
@@ -377,7 +383,7 @@ public class CRUDLoader implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Instance: {} {} failed during runAll " + "MESSAGE: {} STACKTRACE: {}",
-                    ManagementFactory.getRuntimeMXBean().getName(), WHOAMI,
+                    instanceId, WHOAMI,
                     ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
 

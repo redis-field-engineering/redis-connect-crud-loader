@@ -1,4 +1,4 @@
-package com.redislabs.connect.crud.loader.core;
+package com.redis.connect.crud.loader.core;
 
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;

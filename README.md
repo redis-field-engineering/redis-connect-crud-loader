@@ -2,12 +2,12 @@
 
 ## Prerequisites
 
-<br>• RedisConnect connector (e.g. SQL Server) is setup and running with the same source database, schema and table(s) as redis-connect-crud-loader.
+<br>• RedisConnect connector (e.g. SQL Server) is set up and running with the same source database, schema and table(s) as redis-connect-crud-loader.
 <br>• Please have Java Runtime Environment ([OpenJRE](https://openjdk.java.net/install/) or OracleJRE) installed prior to running redis-connect-crud-loader.
 
 ## Download
 
-<br>Download the [latest release](https://github.com/RedisLabs-Field-Engineering/redis-connect-crud-loader/releases/download/v1.0/redis-connect-crud-loader-1.0-SNAPSHOT.tar.gz) and untar (tar -xvf redis-connect-crud-loader-1.0-SNAPSHOT.tar.gz) the redis-connect-crud-loader-1.0-SNAPSHOT.tar.gz archive.
+<br>Download the [latest release](https://github.com/redis-field-engineering/redis-connect-crud-loader/releases/download/v1.0/redis-connect-crud-loader-1.0-SNAPSHOT.tar.gz) and un-tar (tar -xvf redis-connect-crud-loader-1.0-SNAPSHOT.tar.gz) the redis-connect-crud-loader-1.0-SNAPSHOT.tar.gz archive.
 
 All the contents would be extracted under redis-connect-crud-loader directory
 

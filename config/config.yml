@@ -6,13 +6,13 @@ connections:
     name: hr # database pool name
     jdbcUrl: "jdbc:oracle:thin:@redis-connect.demo.redislabs.com:1522/ORCLPDB1"
     tableName: hr.emp # table name in schema.table format
-    batchSize: 100 # batch size
+    batchSize: 1000 # batch size
     #truncateBeforeLoad: true # default is true and the table won't be truncated before initial load. Applies to both crudloader and loadsql options.
     loadQueryFile: insert.sql #insert query for loadsql option
-    csvFile: emp.csv # csv data with header to load (crudloader option)
-    select: select.sql # select query for the continuous crud (crudloader option)
-    updatedSelect: updatedSelect.sql #updated select query for the continuous crud
-    update: update.sql # update query for the continuous crud (crudloader option)
-    delete: delete.sql # delete query for the continuous crud (crudloader option)
+    csvFile: emp_nodate_100k.csv # csv data with header to load (crudloader option)
+    select: #select.sql # select query for the continuous crud (crudloader option)
+    updatedSelect: #updatedSelect.sql #updated select query for the continuous crud
+    update: #update.sql # update query for the continuous crud (crudloader option)
+    delete: #delete.sql # delete query for the continuous crud (crudloader option)
     #loadQuery: "select * from dbo.emp" #This can be used instead of loadQueryFile property
     iteration: 1 # number of iterations to run (crudloader option)

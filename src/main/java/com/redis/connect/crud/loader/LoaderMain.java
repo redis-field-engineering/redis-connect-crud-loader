@@ -1,4 +1,4 @@
-package com.redislabs.connect.crud.loader;
+package com.redis.connect.crud.loader;
 
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine.Command;

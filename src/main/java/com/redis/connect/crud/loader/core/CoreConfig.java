@@ -1,4 +1,4 @@
-package com.redislabs.connect.crud.loader.core;
+package com.redis.connect.crud.loader.core;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -4,13 +4,35 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.redislabs.connect.crud.loader</groupId>
+    <groupId>com.redis.connect.crud.loader</groupId>
     <artifactId>redis-connect-crud-loader</artifactId>
     <name>RedisConnect CRUD Loader</name>
     <description>CRUD Loader for RedisConnect</description>
     <version>1.0-SNAPSHOT</version>
+    <url>https://github.com/redis-field-engineering/redis-connect-crud-loader</url>
+    <inceptionYear>2022</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Redis Enterprise License</name>
+            <url>https://redis.com/legal/licenses/</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>viragtripathi</id>
+            <name>Redis</name>
+            <url>https://github.com/viragtripathi</url>
+            <roles>
+                <role>Committer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <properties>
+        <java.version>11</java.version>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,27 +42,27 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.13.0</version>
+            <version>2.13.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.0</version>
+            <version>2.13.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.13.0</version>
+            <version>2.13.1</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
-            <version>2.13.0</version>
+            <version>2.13.1</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.6</version>
+            <version>1.2.10</version>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -50,47 +72,47 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>9.2.1.jre8</version>
+            <version>10.2.0.jre8</version>
         </dependency>
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
             <artifactId>ojdbc8</artifactId>
-            <version>21.1.0.0</version>
+            <version>21.5.0.0</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.23</version>
+            <version>8.0.25</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.19</version>
+            <version>42.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.ibm.db2</groupId>
             <artifactId>jcc</artifactId>
-            <version>11.5.6.0</version>
+            <version>11.5.7.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.6</version>
+            <version>2.9.0</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
-            <version>1.1</version>
+            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.6.1-jre</version>
+            <version>31.0.1-jre</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20210307</version>
+            <version>20211205</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -110,17 +132,17 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.6</version>
+            <version>2.11.0</version>
         </dependency>
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>5.4</version>
+            <version>5.5.2</version>
         </dependency>
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
-            <version>4.6.1</version>
+            <version>4.6.3</version>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
@@ -130,12 +152,12 @@
         <dependency>
             <groupId>commons-validator</groupId>
             <artifactId>commons-validator</artifactId>
-            <version>1.6</version>
+            <version>1.7</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.20</version>
+            <version>1.18.22</version>
             <scope>provided</scope>
         </dependency>
 
@@ -202,4 +224,82 @@
             </plugin>
         </plugins>
     </build>
+    <!-- JReleaser build profile to deploy to GH -->
+    <profiles>
+        <profile>
+            <id>jreleaser</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>redis-connect-crud-loader</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-dependencies</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <excludeArtifactIds>slf4j-log4j12</excludeArtifactIds>
+                                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jreleaser</groupId>
+                        <artifactId>jreleaser-maven-plugin</artifactId>
+                        <version>1.0.0-M2</version>
+                        <executions>
+                            <execution>
+                                <id>package</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>full-release</goal>
+                                </goals>
+                                <configuration>
+                                    <jreleaser>
+                                        <distributions>
+                                            <redis-connect-archive>
+                                                <artifacts>
+                                                    <artifact>
+                                                        <path>
+                                                            ${project.build.directory}/${project.artifactId}-${project.version}.tar.gz
+                                                        </path>
+                                                    </artifact>
+                                                </artifacts>
+                                            </redis-connect-archive>
+                                        </distributions>
+                                        <release>
+                                            <github>
+                                                <owner>redis-field-engineering</owner>
+                                                <branch>main</branch>
+                                                <commitAuthor>
+                                                    <name>viragtripathi</name>
+                                                    <email>virag.tripathi@gmail.com</email>
+                                                </commitAuthor>
+                                                <overwrite>true</overwrite>
+                                            </github>
+                                        </release>
+                                    </jreleaser>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
