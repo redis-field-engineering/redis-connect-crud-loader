@@ -1,1 +1,1 @@
-DELETE FROM emp WHERE sal > 160000
+delete from employees where employee_id LIKE '3%'

@@ -1,0 +1,1 @@
+delete from emp where empno LIKE '10%'

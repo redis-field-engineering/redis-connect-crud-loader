@@ -16,14 +16,15 @@
         </encoder>
     </appender>
 
-    <logger name="com.redislabs" level="INFO" additivity="false">
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.redis" level="INFO" additivity="false">
         <appender-ref ref="FILE-ROLLING"/>
-    </logger>
-    <logger name="io.netty" level="INFO" additivity="false">
-        <appender-ref ref="FILE-ROLLING"/>
-    </logger>
-    <logger name="io.lettuce" level="INFO" additivity="false">
-        <appender-ref ref="FILE-ROLLING"/>
+        <appender-ref ref="CONSOLE" />
     </logger>
 
     <root level="error">

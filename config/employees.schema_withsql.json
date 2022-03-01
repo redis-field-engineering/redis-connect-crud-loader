@@ -1,0 +1,155 @@
+{
+  "id": 360131,
+  "num_rows": 10000,
+  "file_format": "sql",
+  "name": "employees",
+  "table_name": "employees",
+  "include_create_sql": false,
+  "columns": [
+    {
+      "name": "employee_id",
+      "null_percentage": 0,
+      "type": "Row Number",
+      "formula": "this + 300"
+    },
+    {
+      "name": "first_name",
+      "null_percentage": 0,
+      "type": "First Name",
+      "formula": null
+    },
+    {
+      "name": "last_name",
+      "null_percentage": 0,
+      "type": "Last Name",
+      "formula": null
+    },
+    {
+      "name": "email",
+      "null_percentage": 0,
+      "type": "Email Address",
+      "formula": "this[0,25]"
+    },
+    {
+      "name": "phone_number",
+      "null_percentage": 0,
+      "type": "Phone",
+      "format": "###-###-####",
+      "formula": null
+    },
+    {
+      "name": "hire_date",
+      "null_percentage": 0,
+      "type": "Datetime",
+      "min": "11/22/2020",
+      "max": "11/22/2021",
+      "format": "%Y-%m-%d",
+      "formula": "code(\"to_date('#{this}', 'yyyy-MM-dd')\")"
+    },
+    {
+      "name": "job_id",
+      "null_percentage": 0,
+      "type": "Custom List",
+      "values": [
+        "AD_PRES",
+        "AD_VP",
+        "AD_ASST",
+        "FI_MGR",
+        "FI_ACCOUNT",
+        "AC_MGR",
+        "AC_ACCOUNT",
+        "SA_MAN",
+        "SA_REP",
+        "PU_MAN",
+        "PU_CLERK",
+        "ST_MAN",
+        "ST_CLERK",
+        "SH_CLERK",
+        "IT_PROG",
+        "MK_MAN",
+        "MK_REP",
+        "HR_REP",
+        "PR_REP"
+      ],
+      "selectionStyle": "random",
+      "distribution": null,
+      "formula": null
+    },
+    {
+      "name": "salary",
+      "null_percentage": 0,
+      "type": "Number",
+      "min": 100000,
+      "max": 185000,
+      "decimals": 2,
+      "formula": null
+    },
+    {
+      "name": "commission_pct",
+      "null_percentage": 0,
+      "type": "Number",
+      "min": 0.1,
+      "max": 0.99,
+      "decimals": 2,
+      "formula": null
+    },
+    {
+      "name": "manager_id",
+      "null_percentage": 0,
+      "type": "Custom List",
+      "values": [
+        "200",
+        "201",
+        "114",
+        "203",
+        "121",
+        "103",
+        "204",
+        "145",
+        "100",
+        "108",
+        "205"
+      ],
+      "selectionStyle": "random",
+      "distribution": null,
+      "formula": null
+    },
+    {
+      "name": "department_id",
+      "null_percentage": 0,
+      "type": "Custom List",
+      "values": [
+        "10",
+        "20",
+        "30",
+        "40",
+        "50",
+        "60",
+        "70",
+        "80",
+        "90",
+        "100",
+        "110",
+        "120",
+        "130",
+        "140",
+        "150",
+        "160",
+        "170",
+        "180",
+        "190",
+        "200",
+        "210",
+        "220",
+        "230",
+        "240",
+        "250",
+        "260",
+        "270"
+      ],
+      "selectionStyle": "random",
+      "distribution": null,
+      "formula": null
+    }
+  ]
+}

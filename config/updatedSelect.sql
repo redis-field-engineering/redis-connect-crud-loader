@@ -1,1 +1,1 @@
-SELECT * FROM emp WHERE fname like 'a%'
+select * from emp where empno LIKE '1%'

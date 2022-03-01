@@ -1,1 +1,1 @@
-UPDATE emp SET sal=160000.00 WHERE fname like 'a%'
+update employees set salary=100000 where employee_id LIKE '3%'

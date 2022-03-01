@@ -1,0 +1,18 @@
+connections:
+  source:
+    username: redisconnect # DB user
+    password: Redis123 # DB password
+    type: postgres # this value can not be changed for oracle
+    name: rc-pg # database pool name
+    jdbcUrl: "jdbc:postgresql://redisconnect78638.c7glrswbovia.us-east-1.rds.amazonaws.com:5432/RedisConnect"
+    tableName: public.emp # table name in schema.table format
+    batchSize: 100 # batch size
+    #truncateBeforeLoad: true # default is true and the table won't be truncated before initial load. Applies to both crudloader and loadsql options.
+    loadQueryFile: insert.sql #insert query for loadsql option
+    csvFile: emp.csv.sqlserver # csv data with header to load (crudloader option)
+    select: select.sql # select query for the continuous crud (crudloader option)
+    updatedSelect: updatedSelect.sql #updated select query for the continuous crud
+    update: update.sql # update query for the continuous crud (crudloader option)
+    delete: delete.sql # delete query for the continuous crud (crudloader option)
+    #loadQuery: "select * from dbo.emp" #This can be used instead of loadQueryFile property
+    iteration: 1 # number of iterations to run (crudloader option)

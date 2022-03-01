@@ -1,0 +1,18 @@
+connections:
+  source:
+    username: root #DB user
+    password: Redis@123 #DB password
+    type: mysql #this value can not be changed for mysql
+    jdbcUrl: "jdbc:mysql://redis-cdc.demo.redislabs.com:3306/RedisLabsCDC" 
+    maximumPoolSize: 10 #This property controls the maximum size that the pool is allowed to reach, including both idle and in-use connections.
+    minimumIdle: 2 #This property controls the maximum amount of time that a connection is allowed to sit idle in the pool. This setting only applies when minimumIdle is defined to be less than maximumPoolSize.
+    tableName: RedisLabsCDC.emp #table name in schema.table format
+    batchSize: 100 #batch size
+    loadQueryFile: insert.sql #insert query for loadsql option
+    csvFile: emp.csv #csv data with header to load (crudloader option)
+    select: select.sql #select query for the continuous crud (crudloader option)
+    updatedSelect: updatedSelect.sql #updated select query for the continuous crud
+    update: update.sql #update query for the continuous crud (crudloader option)
+    delete: delete.sql #delete query for the continuous crud (crudloader option)
+    #loadQuery: "select * from dbo.emp" #This can be used instead of loadQueryFile property
+    iteration: 100 #number of iterations to run (crudloader option)
