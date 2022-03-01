@@ -1,1 +1,1 @@
-delete from employees where employee_id LIKE '3%'
+delete from emp where empno::text LIKE '101%'

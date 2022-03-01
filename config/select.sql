@@ -1,1 +1,1 @@
-SELECT * FROM employees WHERE rownum <= 30
+select * from emp limit 30

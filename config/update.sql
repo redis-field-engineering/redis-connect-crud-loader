@@ -1,1 +1,1 @@
-update employees set salary=100000 where employee_id LIKE '3%'
+update emp set sal=100000 where empno::text LIKE '102%'

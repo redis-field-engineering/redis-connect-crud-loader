@@ -8,6 +8,7 @@ connections:
     minimumIdle: 2 #This property controls the maximum amount of time that a connection is allowed to sit idle in the pool. This setting only applies when minimumIdle is defined to be less than maximumPoolSize.
     tableName: dbo.emp #table name in schema.table format
     batchSize: 100 #batch size
+    truncateBeforeLoad: true # default is true and the table will be truncated before initial load. Applies to both crudloader and loadsql options.
     loadQueryFile: insert.sql #insert query for loadsql option
     csvFile: emp.csv #csv data with header to load (crudloader option)
     select: select.sql #select query for the continuous crud (crudloader option)

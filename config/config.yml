@@ -1,15 +1,15 @@
 connections:
   source:
-    username: sa # DB user
+    username: redisconnect # DB user
     password: Redis@123 # DB password
-    type: mssql # this value can not be changed for oracle
-    name: rc-mssql # database pool name
-    jdbcUrl: "jdbc:sqlserver://127.0.0.1:1433;database=RedisConnect"
-    tableName: dbo.emp # table name in schema.table format
-    batchSize: 5000 # batch size
-    truncateBeforeLoad: true # default is true and the table won't be truncated before initial load. Applies to both crudloader and loadsql options.
+    type: postgres # this value can not be changed for postgres
+    name: rc-pg # database pool name
+    jdbcUrl: "jdbc:postgresql://redis-connect.demo.redislabs.com:5432/RedisConnect"
+    tableName: public.emp # table name in schema.table format
+    batchSize: 500 # batch size
+    truncateBeforeLoad: true # default is true and the table will be truncated before initial load. Applies to both crudloader and loadsql options.
     #loadQueryFile: insert.sql #insert query for loadsql option
-    csvFile: emp_100k.csv #emp.csv.sqlserver # csv data with header to load (crudloader option)
+    csvFile: emp.csv #emp_100k.csv # csv data with header to load (crudloader option)
     #select: select.sql.sqlserver # select query for the continuous crud (crudloader option)
     updatedSelect: # updatedSelect.sql #updated select query for the continuous crud
     update: # update.sql # update query for the continuous crud (crudloader option)
