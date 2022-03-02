@@ -1,1 +1,1 @@
-select * from emp where empno LIKE '1%'
+select * from emp where empno::text LIKE '1%'

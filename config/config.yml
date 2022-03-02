@@ -10,7 +10,7 @@ connections:
     truncateBeforeLoad: true # default is true and the table will be truncated before initial load. Applies to both crudloader and loadsql options.
     #loadQueryFile: insert.sql #insert query for loadsql option
     csvFile: emp.csv #emp_100k.csv # csv data with header to load (crudloader option)
-    #select: select.sql.sqlserver # select query for the continuous crud (crudloader option)
+    #select: select.sql # select query for the continuous crud (crudloader option)
     updatedSelect: # updatedSelect.sql #updated select query for the continuous crud
     update: # update.sql # update query for the continuous crud (crudloader option)
     delete: # delete.sql # delete query for the continuous crud (crudloader option)
