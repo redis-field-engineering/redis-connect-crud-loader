@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-<br>• RedisConnect connector (e.g. SQL Server) is set up and running with the same source database, schema and table(s) as redis-connect-crud-loader.
+<br>• Redis Connect is set up and running with the same source database, schema and table(s) as redis-connect-crud-loader.
 <br>• Please have Java Runtime Environment ([OpenJRE](https://openjdk.java.net/install/) or OracleJRE) installed prior to running redis-connect-crud-loader.
 
 ## Download
