@@ -10,11 +10,13 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import picocli.CommandLine;
 
 import java.lang.management.ManagementFactory;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,13 +36,10 @@ public class GenLoader implements Runnable {
     private static final String WHOAMI = "GenLoader";
     private static final Map<String, Object> sourceConfig = LoaderConfig.INSTANCE.getEnvConfig().getConnection("source");
     private static final String tableName = (String) sourceConfig.get("tableName");
-    private int batchSize = (int) sourceConfig.getOrDefault("batchSize", 100);
     private int iteration = (int) sourceConfig.getOrDefault("iteration", 1);
     private static int counter = (int) sourceConfig.getOrDefault("counter", 1);
     private static final AtomicInteger count = new AtomicInteger(0);
     private boolean truncateBeforeLoad = (boolean) sourceConfig.getOrDefault("truncateBeforeLoad", true);
-    private String lineQuery;
-    private ArrayList<String> fileQuery;
 
     private static Faker faker = new Faker();
 
@@ -51,11 +50,9 @@ public class GenLoader implements Runnable {
     private void doInsert(Connection connection) throws Exception {
 
         try {
-            Statement statement = connection.createStatement();
-
-            //Executing SQL query and fetching the result Statement fetchData = conn.createStatement(); // Execute the Insert command
             String insertQuery = "INSERT INTO " + tableName + " VALUES(?,?,?,?,?,?,?,?,?)";
-            PreparedStatement preparedStmt = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
+
+            PreparedStatement preparedStmt = connection.prepareStatement(insertQuery);
             preparedStmt.setInt(1, count.incrementAndGet()); // empno
             preparedStmt.setString(2, faker.name().firstName()); // fname
             preparedStmt.setString(3, faker.name().lastName()); // lname
@@ -67,7 +64,6 @@ public class GenLoader implements Runnable {
             preparedStmt.setInt(9, Integer.parseInt(faker.number().digits(2))); // dept
             preparedStmt.executeUpdate();
 
-            statement.close();
             preparedStmt.close();
         } catch (Exception e) {
             e.printStackTrace();
