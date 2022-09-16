@@ -84,6 +84,6 @@ CRUD loader for redis-connect with random Insert, Update and Delete events.
   -h, --help   Show this help message and exit.
 Commands:
   crudloader  Load CSV data to source database and execute random Insert, Update and Delete events.
-  genloader Generate and load data into emp table
+  genloader   Generate and load fake data into the source table
   loadsql     Load data into source table using sql insert statements.
 ```
