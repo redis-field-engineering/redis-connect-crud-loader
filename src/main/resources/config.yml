@@ -15,4 +15,4 @@ connections:
     update: update.sql #update query for the continuous crud (crudloader option)
     delete: delete.sql #delete query for the continuous crud (crudloader option)
     #loadQuery: "select * from dbo.emp" #This can be used instead of loadQueryFile property
-    iteration: 100 #number of iterations to run (crudloader option)
+    iteration: 1 # number of iterations to run (crudloader option and genloader option for no. of rows to generate)

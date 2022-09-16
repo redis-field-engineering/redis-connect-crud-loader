@@ -1,9 +1,6 @@
 package com.redis.connect.crud.loader;
 
-import com.redis.connect.crud.loader.core.CRUDLoader;
-import com.redis.connect.crud.loader.core.GenerateCompletionCommand;
-import com.redis.connect.crud.loader.core.HelpCommand;
-import com.redis.connect.crud.loader.core.LoaderCommandLine;
+import com.redis.connect.crud.loader.core.*;
 import com.redis.connect.crud.loader.source.rdb.LoadRDB;
 import picocli.CommandLine;
 
@@ -13,7 +10,7 @@ import picocli.CommandLine;
  *
  */
 
-@CommandLine.Command(sortOptions = false, subcommands = {GenerateCompletionCommand.class, CRUDLoader.class, LoadRDB.class}, abbreviateSynopsis = true)
+@CommandLine.Command(sortOptions = false, subcommands = {GenerateCompletionCommand.class, CRUDLoader.class, LoadRDB.class, GenLoader.class}, abbreviateSynopsis = true)
 public class LoaderApp extends HelpCommand {
 
     private int executionStrategy(CommandLine.ParseResult parseResult) {
