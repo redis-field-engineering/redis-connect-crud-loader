@@ -50,6 +50,7 @@ public class GenLoader implements Runnable {
     private void doInsert(Connection connection) throws Exception {
 
         try {
+
             String insertQuery = "INSERT INTO " + tableName + " VALUES(?,?,?,?,?,?,?,?,?)";
 
             PreparedStatement preparedStmt = connection.prepareStatement(insertQuery);
@@ -62,6 +63,7 @@ public class GenLoader implements Runnable {
             preparedStmt.setDouble(7, faker.number().randomDouble(2, 75000, 300000)); // sal
             preparedStmt.setDouble(8, faker.number().randomDouble(2, 5000, 100000)); // comm
             preparedStmt.setInt(9, Integer.parseInt(faker.number().digits(2))); // dept
+
             preparedStmt.executeUpdate();
 
             preparedStmt.close();
@@ -109,6 +111,8 @@ public class GenLoader implements Runnable {
             } else {
                 log.info("Skipping truncate..");
             }
+
+            log.info("\n[Performing INSERT in {} with {} rows] ... ", tableName, iteration);
 
             for (int i = counter; i <= iteration; i++) {
                 doInsert(connection);
