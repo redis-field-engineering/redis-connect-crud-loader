@@ -1,18 +1,19 @@
 connections:
   source:
-    username: c##rcuser # DB user
-    password: rcpwd # DB password
-    type: oracle # this value can not be changed for postgres
+    username: redisconnect # DB user
+    password: Redis@123 # DB password
+    type: postgres # this value can not be changed for postgres
     name: rc-pg # database pool name
-    jdbcUrl: "jdbc:oracle:thin:@127.0.0.1:1522/ORCLPDB1"
-    tableName: c##rcuser.emp1 # table name in schema.table format
+    jdbcUrl: "jdbc:postgresql://127.0.0.1:5436/RedisConnect"
+    tableName: public.emp # table name in schema.table format
     batchSize: 500 # batch size
     truncateBeforeLoad: true # default is true and the table will be truncated before initial load. Applies to both crudloader and loadsql options.
     #loadQueryFile: insert.sql #insert query for loadsql option
     csvFile: emp.csv #emp_100k.csv # csv data with header to load (crudloader option)
-    #select: select.sql # select query for the continuous crud (crudloader option)
+    select: # select.sql # select query for the continuous crud (crudloader option)
     updatedSelect: # updatedSelect.sql #updated select query for the continuous crud
     update: # update.sql # update query for the continuous crud (crudloader option)
     delete: # delete.sql # delete query for the continuous crud (crudloader option)
     #loadQuery: "select * from dbo.emp" #This can be used instead of loadQueryFile property
     iteration: 1 # number of iterations to run (crudloader option and genloader option for no. of rows to generate)
+    sleepDuration: 1000 # number of ms to sleep in between iterations if iteration > 1

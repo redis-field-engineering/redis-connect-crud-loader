@@ -27,15 +27,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 @Slf4j
 @CommandLine.Command(name = "genloader",
-        description = "Load data into emp table using java faker.")
+        description = "Load data into database tables using java faker.")
 public class GenLoader implements Runnable {
 
     private final String instanceId;
-    private Connection connection;
+    private static Connection connection;
 
     private static final String WHOAMI = "GenLoader";
     private static final Map<String, Object> sourceConfig = LoaderConfig.INSTANCE.getEnvConfig().getConnection("source");
-    private static final String tableName = (String) sourceConfig.get("tableName");
+    private static final String tableName = (String) sourceConfig.getOrDefault("tableName", "emp");
     private int iteration = (int) sourceConfig.getOrDefault("iteration", 1);
     private static int counter = (int) sourceConfig.getOrDefault("counter", 1);
     private static final AtomicInteger count = new AtomicInteger(0);
@@ -47,7 +47,7 @@ public class GenLoader implements Runnable {
         this.instanceId = ManagementFactory.getRuntimeMXBean().getName();
     }
 
-    private void doInsert(Connection connection) throws Exception {
+    private void doEmpInsert(Connection connection) throws Exception {
 
         try {
 
@@ -75,6 +75,40 @@ public class GenLoader implements Runnable {
         }
 
     }
+
+    /*
+    @CommandLine.Command(name = "beers")
+    public void doBeersInsert(Connection connection) throws Exception {
+
+        try {
+
+            String insertQuery = "INSERT INTO " + tableName + " VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+
+            PreparedStatement preparedStmt = connection.prepareStatement(insertQuery);
+            preparedStmt.setInt(1, count.incrementAndGet()); // id
+            preparedStmt.setInt(2, faker.random().nextInt(1, 1000000)); // brewery_id
+            preparedStmt.setString(3, faker.beer().name()); // name
+            preparedStmt.setDouble(4, faker.number().randomDouble(1, 1, 15)); // abv i.e. alcohol by volume
+            preparedStmt.setInt(5, faker.random().nextInt(5, 120)); // ibu i.e. International Bitterness Unit
+            preparedStmt.setInt(6, faker.random().nextInt(1, 60)); // srm i.e. Standard Reference Method
+            preparedStmt.setString(7, null); // upc i.e.
+            preparedStmt.setString(8, null); // filepath
+            preparedStmt.setString(9, null); // description
+            preparedStmt.setString(10, null); // add_user
+            preparedStmt.setString(11, faker.beer().style()); // style_name
+            preparedStmt.setString(12, faker.beer().style()); // cat_name
+
+            preparedStmt.executeUpdate();
+
+            preparedStmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(
+                    "Error occurred while loading data from insert statements. "
+                            + ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+    */
 
     public static Timestamp getRandomDOB() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
@@ -115,7 +149,8 @@ public class GenLoader implements Runnable {
             log.info("\n[Performing INSERT in {} with {} rows] ... ", tableName, iteration);
 
             for (int i = counter; i <= iteration; i++) {
-                doInsert(connection);
+                doEmpInsert(connection);
+                //doBeersInsert(connection);
             }
 
             log.info("Instance: {} {} ended with {} iteration(s).", instanceId, WHOAMI, iteration);
@@ -137,4 +172,5 @@ public class GenLoader implements Runnable {
     public void run() {
         runAll();
     }
+
 }

@@ -52,6 +52,7 @@ public class CRUDLoader implements Runnable {
     private static final String delete = (String) sourceConfig.get("delete");
     private int batchSize = (int) sourceConfig.getOrDefault("batchSize", 100);
     private int iteration = (int) sourceConfig.getOrDefault("iteration", 1);
+    private int sleepDuration = (int) sourceConfig.getOrDefault("sleepDuration", 1000);
     private static final String type = (String) sourceConfig.get("type");
     private char separator = (char) sourceConfig.getOrDefault("separator", ',');
     private boolean truncateBeforeLoad = (boolean) sourceConfig.getOrDefault("truncateBeforeLoad", true);
@@ -320,22 +321,25 @@ public class CRUDLoader implements Runnable {
 
     private void runAll() {
         try {
-            log.info("Instance: {} {} started with {} iteration(s).", ManagementFactory.getRuntimeMXBean().getName(), WHOAMI, iteration);
-            Instant start = Instant.now();
+            log.info("Instance: {} {} started with {} iteration(s).", instanceId, WHOAMI, iteration);
+            long start = System.currentTimeMillis();
             CoreConfig coreConfig = new CoreConfig();
             JDBCConnectionProvider JDBC_CONNECTION_PROVIDER = new JDBCConnectionProvider();
             connection = JDBC_CONNECTION_PROVIDER.getConnection(coreConfig.getConnectionId());
+
             for (int i = 1; i <= iteration; i++) {
-                if (truncateBeforeLoad) {
+                log.info("Instance: {} {} running iteration {}.", instanceId, WHOAMI, i);
+                long iterationStart = System.currentTimeMillis();
+
+                if (truncateBeforeLoad)
                     doDeleteAll(connection);
-                } else {
+                else
                     log.info("Skipping truncate..");
-                }
-                if (select != null) {
+
+                if (select != null)
                     doSelect(connection);
-                } else {
+                else
                     log.info("Skipping select..");
-                }
 
                 doCount(connection);
 
@@ -354,31 +358,47 @@ public class CRUDLoader implements Runnable {
                 } else {
                     log.info("Skipping update..");
                 }
-                if (updatedSelect != null) {
+
+                if (updatedSelect != null)
                     doUpdatedSelect(connection);
-                } else {
+                else
                     log.info("Skipping updatedSelect..");
-                }
+
                 if (delete != null) {
                     doDelete(connection);
                     doCount(connection);
                 } else {
                     log.info("Skipping delete..");
                 }
-                if (select != null) {
+
+                if (select != null)
                     doSelect(connection);
-                } else {
+                else
                     log.info("Skipping select..");
-                }
+
                 doCount(connection);
+
+                if (iteration > 1) {
+                    long iterationFinish = System.currentTimeMillis();
+                    long iterationDelay = iterationFinish - iterationStart;
+                    log.info("Instance: {} {} sleeping for {} ms..", instanceId, WHOAMI, sleepDuration);
+                    sleep(sleepDuration);
+                    if (iterationDelay < sleepDuration) {
+                        long sleepInterval = iterationDelay - (iterationFinish - iterationStart);
+                        if (sleepInterval > 0)
+                            log.info("Instance: {} {} sleeping for {} ms..", instanceId, WHOAMI, sleepInterval);
+                        sleep(sleepInterval);
+                    }
+                }
+                log.info("It took {} ms to finish iteration {}.", (System.currentTimeMillis() - iterationStart), i);
 
             }
 
             log.info("Instance: {} {} ended with {} iteration(s).", instanceId, WHOAMI, iteration);
 
-            Instant finish = Instant.now();
-            long timeElapsed = Duration.between(start, finish).toMillis();
-            log.info("It took {} ms to finish {} iterations.", timeElapsed, iteration);
+            long finish = System.currentTimeMillis();
+            long timeElapsed = finish - start;
+            log.info("It took {} ms to finish {} with {} iterations.", timeElapsed, WHOAMI, iteration);
             connection.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -387,6 +407,18 @@ public class CRUDLoader implements Runnable {
                     ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
         }
 
+    }
+
+    private void sleep(long sleepDuration) {
+        try {
+            Thread.sleep(sleepDuration);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Instance: {} {} failed during sleep " + "MESSAGE: {} STACKTRACE: {}",
+                    instanceId, WHOAMI,
+                    ExceptionUtils.getRootCauseMessage(e), ExceptionUtils.getRootCauseStackTrace(e));
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
